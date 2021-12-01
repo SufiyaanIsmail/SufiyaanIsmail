@@ -1,0 +1,55 @@
+--Link to dataset that I used: https://ourworldindata.org/covid-deaths
+
+SELECT *
+FROM PortfolioProject..CovidDeaths
+
+SELECT *
+FROM PortfolioProject..CovidVaccinations
+
+
+
+--TOTAL CASES AND DEATH WITH PERCENTAGE GLOBALLY
+SELECT SUM(new_cases) AS TotalCases, SUM(CAST(new_deaths as int)) AS TotalDeaths, SUM(CAST(new_deaths as int))/SUM(new_cases)*100 AS DeathPercentage
+FROM PortfolioProject..CovidDeaths
+WHERE continent IS NOT NULL
+
+-- TOTAL DEATHS BY CONTINENT
+SELECT continent AS Continents, MAX(CAST(total_deaths as int)) AS TotalDeaths
+FROM PortfolioProject..CovidDeaths
+WHERE continent IS NOT NULL
+GROUP BY continent
+ORDER BY TotalDeaths desc
+
+--GLOBAL CASES AND DEATHS BY DATE
+SELECT date, SUM(new_cases) AS new_cases, SUM(CAST(new_deaths AS int)) AS new_deaths
+FROM PortfolioProject..CovidDeaths
+GROUP BY date
+ORDER BY date
+
+--PERCENT POPULATION INFECTED
+Select Location, Population,date, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
+From PortfolioProject..CovidDeaths
+--Where location like '%states%'
+Group by Location, Population, date
+order by PercentPopulationInfected desc
+
+--TOTAL CASES WITH TOTAL ICU PATIENTS FOR EACH LOCATION
+SELECT location, SUM(new_cases) AS Total_New_Cases, SUM(CAST(icu_patients AS int)) AS Total_ICU_Patients
+FROM PortfolioProject..CovidDeaths
+WHERE continent IS NOT NULL
+GROUP BY location
+ORDER BY location
+
+--TOTAL HOSPITAL PATIENTS FOR EACH CONTINENT
+SELECT continent, SUM(CAST(hosp_patients AS int)) as Total_Hosp_Patients
+FROM PortfolioProject..CovidDeaths
+WHERE continent IS NOT NULL
+GROUP BY continent
+ORDER BY Total_Hosp_Patients desc
+
+--TOTAL VACCINATIONS BY DATE
+SELECT date, SUM(CAST(new_vaccinations AS bigint)) AS total_new_vaccinations
+FROM PortfolioProject..CovidVaccinations
+--WHERE total_vaccinations IS NOT NULL
+GROUP BY date
+ORDER BY date
